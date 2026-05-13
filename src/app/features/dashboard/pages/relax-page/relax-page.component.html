@@ -1,0 +1,208 @@
+<div class="relax">
+
+  <!-- ════════ HERO HEADER ════════ -->
+  <div class="relax__header">
+    <!-- <div class="relax__header-icon">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="url(#hg)" stroke-width="2.5"/>
+        <path d="M10 16 C10 12, 16 8, 16 16 C16 8, 22 12, 22 16 C22 20, 16 26, 16 20 C16 26, 10 20, 10 16Z"
+              fill="url(#hg)" opacity="0.85"/>
+        <defs>
+          <linearGradient id="hg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4ecdc4"/>
+            <stop offset="100%" stop-color="#7b61ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div> -->
+    <h1 class="relax__title">Relax &amp; Reset</h1>
+    <p class="relax__subtitle">Take a moment to breathe and recharge before checking your stress level again.</p>
+  </div>
+
+  <!-- ════════ TABS ════════ -->
+  <div class="relax__tabs">
+    <button
+      class="relax__tab"
+      [class.relax__tab--active]="activeTab() === 'breathing'"
+      (click)="setTab('breathing')"
+    >
+      <span class="tab-icon"></span> Breathing
+    </button>
+    <button
+      class="relax__tab"
+      [class.relax__tab--active]="activeTab() === 'meditation'"
+      (click)="setTab('meditation')"
+    >
+      <span class="tab-icon"></span> Meditation
+    </button>
+    <div class="relax__tabs-slider" [class.right]="activeTab() === 'meditation'"></div>
+  </div>
+
+  <!-- ════════ TAB CONTENT ════════ -->
+  <div class="relax__body">
+
+    <!-- ──── BREATHING TAB ──── -->
+    <div class="tab-panel" [class.tab-panel--visible]="activeTab() === 'breathing'">
+
+      <!-- Pattern selector -->
+      <div class="pattern-row">
+        <button
+          *ngFor="let p of patterns"
+          class="pattern-btn"
+          [class.pattern-btn--active]="selectedPattern().id === p.id"
+          (click)="selectPattern(p)"
+        >
+          <span class="pattern-btn__label">{{ p.label }}</span>
+          <span class="pattern-btn__desc">{{ p.description }}</span>
+        </button>
+      </div>
+
+      <!-- Breathing circle -->
+      <div class="breath-stage">
+        <div
+          class="breath-ripple"
+          [class.breath-ripple--active]="breathRunning() && !breathPaused()"
+          [class.breath-ripple--inhale]="breathPhase() === 'inhale' && breathRunning() && !breathPaused()"
+        ></div>
+        <div
+          class="breath-circle"
+          [class.breath-circle--inhale]="breathPhase() === 'inhale' && breathRunning() && !breathPaused()"
+          [class.breath-circle--exhale]="breathPhase() === 'exhale' && breathRunning() && !breathPaused()"
+          [class.breath-circle--hold]="(breathPhase() === 'hold' || breathPhase() === 'hold2') && breathRunning() && !breathPaused()"
+        >
+          <div class="breath-circle__label">
+            {{ breathRunning() ? breathPhaseLabel() : 'Ready' }}
+          </div>
+          <div class="breath-circle__countdown" *ngIf="breathRunning() && breathCountdown() > 0">
+            {{ breathCountdown() }}s
+          </div>
+        </div>
+      </div>
+
+      <!-- Cycle counter -->
+      <div class="breath-meta" *ngIf="breathRunning()">
+        Cycle {{ breathCycle() + 1 }}
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button
+          class="ctrl-btn ctrl-btn--primary"
+          *ngIf="!breathRunning() || breathPaused()"
+          (click)="startBreath()"
+        >
+          {{ breathPaused() ? 'Resume' : 'Start Session' }}
+        </button>
+        <button
+          class="ctrl-btn ctrl-btn--secondary"
+          *ngIf="breathRunning() && !breathPaused()"
+          (click)="pauseBreath()"
+        >Pause</button>
+        <button
+          class="ctrl-btn ctrl-btn--ghost"
+          *ngIf="breathRunning() || breathPaused()"
+          (click)="stopBreath()"
+        >Reset</button>
+      </div>
+    </div>
+
+    <!-- ──── MEDITATION TAB ──── -->
+    <div class="tab-panel" [class.tab-panel--visible]="activeTab() === 'meditation'">
+
+      <!-- Meditation card -->
+      <div class="med-card">
+        <div class="med-card__icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" stroke="url(#mg)" stroke-width="2"/>
+            <path d="M20 8 C14 14, 8 16, 8 20 C8 26, 14 30, 20 32 C26 30, 32 26, 32 20 C32 16, 26 14, 20 8Z"
+                  fill="url(#mg)" opacity="0.2"/>
+            <circle cx="20" cy="20" r="5" fill="url(#mg)" opacity="0.7"/>
+            <defs>
+              <linearGradient id="mg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4ecdc4"/>
+                <stop offset="100%" stop-color="#7b61ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="med-card__text">Guided Relaxation Session</div>
+      </div>
+
+      <!-- Duration selector -->
+      <div class="duration-row" *ngIf="meditationPhase() === 'idle'">
+        <button
+          *ngFor="let d of meditationDurations"
+          class="duration-btn"
+          [class.duration-btn--active]="selectedDuration().label === d.label"
+          (click)="selectDuration(d)"
+        >{{ d.label }}</button>
+      </div>
+
+      <!-- Timer display (running / paused) -->
+      <div class="med-timer" *ngIf="meditationPhase() === 'running' || meditationPhase() === 'paused'">
+        <div class="med-timer__ring">
+          <svg viewBox="0 0 120 120" class="med-timer__svg">
+            <defs>
+              <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#4ecdc4"/>
+                <stop offset="100%" stop-color="#7b61ff"/>
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="52" class="med-timer__track"/>
+            <circle
+              cx="60" cy="60" r="52"
+              class="med-timer__progress"
+              [style.stroke-dashoffset]="326.7 - (326.7 * meditationProgress() / 100)"
+            />
+          </svg>
+          <div class="med-timer__inner">
+            <div class="med-timer__time">{{ meditationTimeDisplay() }}</div>
+            <div class="med-timer__msg">{{ meditationMessage() }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Done state -->
+      <div class="med-done" *ngIf="meditationPhase() === 'done'">
+        <div class="med-done__text">Session complete. Well done.</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button
+          class="ctrl-btn ctrl-btn--primary"
+          *ngIf="meditationPhase() === 'idle' || meditationPhase() === 'paused' || meditationPhase() === 'done'"
+          (click)="startMeditation()"
+        >
+          {{ meditationPhase() === 'done' ? 'Start New Session' : (meditationPhase() === 'paused' ? 'Resume' : 'Start Meditation') }}
+        </button>
+        <button
+          class="ctrl-btn ctrl-btn--secondary"
+          *ngIf="meditationPhase() === 'running'"
+          (click)="pauseMeditation()"
+        >Pause</button>
+        <button
+          class="ctrl-btn ctrl-btn--ghost"
+          *ngIf="meditationPhase() !== 'idle'"
+          (click)="stopMeditation()"
+        >Stop</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════════ MOTIVATION + CTA ════════ -->
+  <div class="relax__footer">
+   
+    <button class="retest-btn" (click)="goHome()">
+      <span class="retest-btn__icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 1.5L16.5 9L9 16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M1.5 9H16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Retest Stress Level
+    </button>
+  </div>
+
+</div>

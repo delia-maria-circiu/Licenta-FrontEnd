@@ -1,0 +1,118 @@
+<div class="profile">
+  <div class="profileCard">
+
+    <!-- Header cu avatar și nume -->
+    <div class="profileHeader">
+      <div class="avatarWrapper" (click)="fileInput.click()">
+        <div class="avatarCircle" *ngIf="!profile()?.avatarUrl; else avatarImg">
+          {{ initials() }}
+        </div>
+        <ng-template #avatarImg>
+          <img [src]="profile()?.avatarUrl" class="avatarImg" alt="Avatar" />
+        </ng-template>
+        <div class="avatarOverlay">
+          <mat-icon>camera_alt</mat-icon>
+        </div>
+      </div>
+      <div class="profileName">{{ profile()?.name || profile()?.username }}</div>
+      <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)" />
+    </div>
+
+    <!-- Secțiunea Appearance -->
+    <div class="section">
+      <div class="sectionHeader">
+        <mat-icon class="sectionIcon">palette</mat-icon>
+        <span>Appearance</span>
+      </div>
+      <div class="themeRow">
+        <span class="themeLabel">{{ isDark() ? 'Dark Mode' : 'Light Mode' }}</span>
+        <button class="themeToggle" (click)="toggleTheme()">
+          <mat-icon>{{ isDark() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Secțiunea Personal Information (protejată) -->
+    <div class="section" *ngIf="editProfile">
+      <div class="sectionHeader">
+        <mat-icon class="sectionIcon">person</mat-icon>
+        <span>Personal Information</span>
+        <span class="sectionHint">For ML Calibration</span>
+      </div>
+
+      <div class="infoGrid">
+        <div class="infoField">
+          <label>Name</label>
+          <input [(ngModel)]="editProfile.name" placeholder="Your name" />
+        </div>
+        <div class="infoField">
+          <label>Email</label>
+          <input [(ngModel)]="editProfile.email" type="email" placeholder="email@example.com" />
+        </div>
+        <div class="infoField">
+          <label>Age</label>
+          <input [(ngModel)]="editProfile.age" type="number" placeholder="years" />
+        </div>
+        <div class="infoField">
+          <label>Weight</label>
+          <input [(ngModel)]="editProfile.weight" type="number" placeholder="kg" />
+        </div>
+        <div class="infoField">
+          <label>Height</label>
+          <input [(ngModel)]="editProfile.height" type="number" placeholder="cm" />
+        </div>
+        <div class="infoField">
+          <label>Gender</label>
+          <select [(ngModel)]="editProfile.gender">
+            <option [ngValue]="null" disabled>Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="saveBtn" (click)="saveChanges()" [disabled]="!hasChanges() || isSaving()">
+        <mat-icon>save</mat-icon>
+        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+
+    <!-- Secțiunea Connected Devices -->
+    <div class="section">
+      <div class="sectionHeader">
+        <mat-icon class="sectionIcon">devices</mat-icon>
+        <span>Connected Devices</span>
+      </div>
+      <div class="deviceRow">
+        <div class="deviceInfo">
+          <mat-icon class="deviceIcon">watch</mat-icon>
+          <div>
+            <div class="deviceName">Stress Monitoring Device</div>
+            <div class="deviceStatus" [class.connected]="deviceConnected()" [class.disconnected]="!deviceConnected()">
+              <span class="statusDot"></span>
+              {{ deviceConnected() ? 'Connected' : 'Disconnected' }}
+            </div>
+          </div>
+        </div>
+        <mat-icon class="deviceArrow">chevron_right</mat-icon>
+      </div>
+    </div>
+
+    <!-- Buton Logout -->
+    <button class="logoutBtn" (click)="logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
+
+    <!-- Footer -->
+    <div class="profileFooter">
+      <div class="footerVersion">MonitorStress v1.2.0</div>
+      <div class="footerLinks">
+        <a href="#">Privacy Policy</a>
+        <span>•</span>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+
+  </div>
+</div>

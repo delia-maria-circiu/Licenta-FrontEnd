@@ -1,0 +1,100 @@
+<div class="home">
+    <!-- Greeting row -->
+  <div class="home__top">
+    <div class="home__greet">
+      <div class="home__greetSmall">{{ getTimeOfDay() }},</div>
+      <div class="home__greetName">{{ user()?.username || 'User' }}</div>
+    </div>
+    <div class="home__avatar" aria-label="User avatar">
+      {{ (user()?.username || 'U').slice(0,2).toUpperCase() }}
+    </div>
+  </div>
+  <!-- Status bar --> 
+  <div class="statusBar">
+    <div class="statusBar__col">
+      <span class="statusBar__label">Current Status</span>
+      <span class="statusBar__value statusBar__value--trend">{{ currentStatus() }}</span>
+    </div>
+    <div class="statusBar__col">
+      <span class="statusBar__label">Since</span>
+      <span class="statusBar__value">{{ since() }}</span>
+    </div>
+  </div>
+
+  <!-- Gauge -->
+<div class="gaugeSection">
+  <div class="gaugeContainer">
+    <!-- SVG pentru inel -->
+    <svg viewBox="0 0 120 120" class="gaugeSvg">
+      <defs>
+        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00f5d4" />
+          <stop offset="100%" stop-color="#7b2ff7" />
+        </linearGradient>
+      </defs>
+      <!-- Cercul de fundal -->
+      <circle class="gaugeBg" cx="60" cy="60" r="52" />
+      <!-- Cercul de progres -->
+      <circle
+        class="gaugeFill"
+        cx="60" cy="60" r="52"
+        [attr.stroke-dasharray]="circumference"
+        [attr.stroke-dashoffset]="dashOffset"
+      />
+    </svg>
+    <!-- Textul central -->
+    <div class="gaugeInner">
+      <div class="gaugeValue">{{ gaugePercentage() }}%</div>
+      <div class="gaugeLabel">STRESS LEVEL</div>
+      <div class="gaugeStatus">{{ getStatusLabel() }}</div>
+      <div class="mlPrediction" *ngIf="mlStressLevel() !== '—'">
+        ML: {{ mlStressLevel() }}
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="noFinger" *ngIf="!finger()">
+    <mat-icon>touch_app</mat-icon> Place finger on sensor
+  </div>
+  <!-- Insight -->
+  <div class="insightCard">
+    <div class="insightCard__icon"><mat-icon class="cyan-icon">tips_and_updates</mat-icon></div>
+    <div class="insightCard__title">Today's Insight</div>
+    <p class="insightCard__text">{{ getStressMessage() }}</p>
+  </div>
+
+  <!-- Sensor cards -->
+  <div class="sensorRow">
+    <div class="sensorCard">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="cyan-icon">favorite</mat-icon>
+          <span>Heart Rate</span>
+        </div>
+        <div class="liveIndicator">
+          <span class="liveDot"></span>LIVE
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && bpm() ? bpm() : '--' }}</div>
+      <div class="sensorCard__unit">BPM</div>
+      <div class="sensorCard__wave sensorCard__wave--cyan"></div>
+    </div>
+
+    <div class="sensorCard">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="purple-icon">show_chart</mat-icon>
+          <span>Galvanic Skin</span>
+        </div>
+        <div class="liveIndicator">
+          <span class="liveDot"></span>LIVE
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && gsr() ? gsr() : '--' }}</div>
+      <div class="sensorCard__unit">μS</div>
+      <div class="sensorCard__wave sensorCard__wave--purple"></div>
+    </div>
+  </div>
+
+</div>

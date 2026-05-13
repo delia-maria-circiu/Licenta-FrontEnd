@@ -1,5 +1,7 @@
-import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +9,11 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('stress_monitor_frontend');
+export class App implements OnInit  {
+  constructor(private auth: AuthService) {}
+
+  ngOnInit(): void {
+    // Aplică tema salvată la pornirea aplicației
+    this.auth.applyTheme(this.auth.getTheme());
+  }
 }

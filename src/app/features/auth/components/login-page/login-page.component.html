@@ -1,0 +1,37 @@
+<div class="app-page">
+  <div class="auth">
+    <div class="authCard__brand">
+      <div class="authCard__logo">MonitorStress</div>
+      <div class="authCard__tag">Bio-Feedback &amp; ML Stress Monitor</div>
+    </div>
+
+    <form class="authCard__form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="fill" class="auth__field">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" autocomplete="username" />
+        <mat-error *ngIf="loginForm.get('username')?.hasError('required')">Username is required</mat-error>
+        <mat-error *ngIf="loginForm.get('username')?.hasError('minlength')">Minimum 3 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="auth__field">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Minimum 4 characters</mat-error>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" class="auth__submit" type="submit" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Sign In</span>
+        <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="18"></mat-progress-spinner>
+      </button>
+    </form>
+
+    <div class="auth__footer">
+      <span>Don’t have an account?</span>
+      <a routerLink="/register">Sign up</a>
+    </div>
+  </div>
+</div>

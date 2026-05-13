@@ -1,0 +1,38 @@
+<div class="training">
+  <h2 class="training__title">Training Center</h2>
+
+  <!-- Duration card -->
+  <div class="durationCard">
+    <div class="durationCard__label">Session Duration</div>
+    <div class="durationCard__time">{{ sessionDurationDisplay }}</div>
+    <div class="durationCard__sub">
+      Start a session by selecting your state below
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="actionArea">
+    <ng-container *ngIf="!sessionActive()">
+      <button class="labeledBtn relaxBtn" (click)="startRelaxed()">
+        <mat-icon>play_arrow</mat-icon> START RELAXED SESSION
+      </button>
+      <button class="labeledBtn stressedBtn" (click)="startStressed()">
+        <mat-icon>play_arrow</mat-icon> START STRESSED SESSION
+      </button>
+      <div class="infoBanner labeledInfo">
+        <strong>Training Mode:</strong> Label your current state to help the ML model learn your personal stress patterns.
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="sessionActive()">
+      <button mat-flat-button class="stopBtn" (click)="stopSession()">
+        <mat-icon>stop</mat-icon> STOP SESSION
+      </button>
+      <div class="infoBanner" [class.relaxedActive]="sessionLabel() === 'relaxed'" [class.stressedActive]="sessionLabel() === 'stressed'">
+        <strong>Active session:</strong> {{ sessionLabel() === 'relaxed' ? 'Relaxed' : 'Stressed' }}
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="statusMessage" *ngIf="statusMessage()">{{ statusMessage() }}</div>
+</div>

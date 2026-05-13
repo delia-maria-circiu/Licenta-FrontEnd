@@ -1,0 +1,51 @@
+<div class="dash">
+
+  <nav class="dash__sidebar" aria-label="Sidebar Navigation">
+
+    <!-- <div class="dash__sidebarLogo">
+      <div class="dash__sidebarLogoIcon">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+          <path d="M10 16 C10 12, 16 8, 16 16 C16 8, 22 12, 22 16 C22 20, 16 26, 16 20 C16 26, 10 20, 10 16Z"
+                fill="url(#sg)" opacity="0.95"/>
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4ecdc4"/>
+              <stop offset="100%" stop-color="#7b61ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="dash__sidebarLogoText">ZenPulse</span>
+    </div> -->
+
+    <div class="dash__navItems">
+      <a routerLink="/dashboard/home" routerLinkActive="is-active" class="dash__navItem"
+         [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a class="dash__navItem is-disabled" aria-disabled="true">
+        <mat-icon>show_chart</mat-icon>
+        <span>Trends</span>
+      </a>
+      <a routerLink="/dashboard/training" routerLinkActive="is-active" class="dash__navItem">
+        <mat-icon>self_improvement</mat-icon>
+        <span>Training</span>
+      </a>
+      <a routerLink="/dashboard/relax" routerLinkActive="is-active" class="dash__navItem">
+        <mat-icon>air</mat-icon>
+        <span>Relax</span>
+      </a>
+      <a routerLink="/dashboard/profile" routerLinkActive="is-active" class="dash__navItem">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </a>
+    </div>
+
+  </nav>
+
+  <main class="dash__content" role="main">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
