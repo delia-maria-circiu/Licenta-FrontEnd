@@ -5,23 +5,34 @@ import { catchError, tap } from 'rxjs/operators';
 import { LoginModel } from '../../features/auth/models/login.model';
 import { RegisterModel } from '../../features/auth/models/register.model';
 
-export type CurrentUser = { id: number; username: string };
+export type CurrentUser = {
+  id: number;
+  username: string;
+  // câmpuri de profil — opționale, populate după login via getProfile
+  name?: string;
+  email?: string;
+  age?: number | null;
+  weight?: number | null;
+  height?: number | null;
+  gender?: 'Male' | 'Female' | 'Other' | null;  // ← era string | null
+  avatarUrl?: string | null;
+};
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api';
   private readonly THEME_KEY = 'appTheme';
 
   constructor(private http: HttpClient) {}
 
-  // ------------------ Autentificare ------------------
   login(loginData: LoginModel): Observable<CurrentUser> {
     return this.http.post<CurrentUser>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: any) => {
         if (response?.id != null && response?.username) {
-          const user: CurrentUser = { id: Number(response.id), username: String(response.username) };
+          const user: CurrentUser = {
+            id: Number(response.id),
+            username: String(response.username)
+          };
           localStorage.setItem('currentUser', JSON.stringify(user));
         }
       }),
@@ -49,13 +60,20 @@ export class AuthService {
     try {
       const parsed = JSON.parse(raw);
       if (parsed?.id == null || !parsed?.username) return null;
-      return { id: Number(parsed.id), username: String(parsed.username) };
+      // returnează tot obiectul, nu doar id+username
+      return parsed as CurrentUser;
     } catch {
       return null;
     }
   }
 
-  // ------------------ Temă ------------------
+  updateCurrentUser(profile: Partial<CurrentUser>): void {
+    const current = this.getCurrentUser();
+    if (!current) return;
+    const updated: CurrentUser = { ...current, ...profile };
+    localStorage.setItem('currentUser', JSON.stringify(updated));
+  }
+
   getTheme(): 'light' | 'dark' {
     return (localStorage.getItem(this.THEME_KEY) as 'light' | 'dark') || 'light';
   }
@@ -69,15 +87,11 @@ export class AuthService {
     document.documentElement.setAttribute('data-theme', theme);
   }
 
-  // ------------------ Erori ------------------
   private handleError(error: HttpErrorResponse): Observable<never> {
     let message = 'An unexpected error occurred. Please try again.';
     if (error.error) {
-      if (typeof error.error === 'string') {
-        message = error.error;
-      } else if (error.error?.error) {
-        message = error.error.error;
-      }
+      if (typeof error.error === 'string') message = error.error;
+      else if (error.error?.error) message = error.error.error;
     }
     return throwError(() => new Error(message));
   }

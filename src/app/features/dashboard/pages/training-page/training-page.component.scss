@@ -1,6 +1,125 @@
+// :host {
+//   display: block;
+//   padding: 24px 20px 100px;
+//   background: var(--bg-primary);
+//   font-family: 'Inter', sans-serif;
+//   color: var(--text-primary);
+// }
+
+// .training__title {
+//   font-size: 20px;
+//   font-weight: 800;
+//   margin: 0 0 16px;
+// }
+
+// // Duration card
+// .durationCard {
+//   background: var(--bg-card);
+//   border-radius: 16px;
+//   padding: 24px;
+//   text-align: center;
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+//   margin-bottom: 16px;
+// }
+
+// .durationCard__label {
+//   font-size: 11px;
+//   font-weight: 600;
+//   color: var(--text-secondary);
+//   text-transform: uppercase;
+//   margin-bottom: 8px;
+// }
+
+// .durationCard__time {
+//   font-size: 48px;
+//   font-weight: 300;
+//   letter-spacing: 2px;
+//   color: var(--text-primary);
+//   margin-bottom: 4px;
+// }
+
+// .durationCard__sub {
+//   font-size: 12px;
+//   color: var(--text-secondary);
+// }
+
+// // Buttons
+// .actionArea {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 12px;
+//   margin-bottom: 12px;
+// }
+
+// .stopBtn {
+//   width: 100%;
+//   height: 52px;
+//   border-radius: 14px;
+//   font-weight: 800;
+//   color: #fff;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 8px;
+//   border: none;
+//   cursor: pointer;
+//   background: linear-gradient(90deg, #f44336, #ff5252);
+// }
+
+// .labeledBtn {
+//   width: 100%;
+//   height: 52px;
+//   border-radius: 14px;
+//   font-weight: 800;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 8px;
+//   background: var(--bg-card);
+//   border: 2px solid;
+//   cursor: pointer;
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+// }
+
+// .relaxBtn {
+//   border-color: rgba(76, 175, 80, 0.5);
+//   color: #2e7d32;
+// }
+
+// .stressedBtn {
+//   border-color: rgba(244, 67, 54, 0.5);
+//   color: #c62828;
+// }
+
+// .infoBanner {
+//   background: var(--bg-card);
+//   border-radius: 12px;
+//   padding: 12px;
+//   font-size: 12px;
+//   font-weight: 600;
+//   line-height: 1.4;
+//   color: var(--text-secondary);
+//   box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+
+//   strong {
+//     font-weight: 800;
+//   }
+// }
+
+// .labeledInfo strong { color: #7b2ff7; }
+// .relaxedActive { border: 1px solid rgba(76, 175, 80, 0.3); strong { color: #2e7d32; } }
+// .stressedActive { border: 1px solid rgba(244, 67, 54, 0.3); strong { color: #c62828; } }
+
+// .statusMessage {
+//   margin-top: 12px;
+//   text-align: center;
+//   font-size: 13px;
+//   font-weight: 600;
+//   color: var(--text-secondary);
+// }
 :host {
   display: block;
-  padding: 24px 20px 100px;
+  padding: 24px 20px 60px;
   background: var(--bg-primary);
   font-family: 'Inter', sans-serif;
   color: var(--text-primary);
@@ -10,110 +129,119 @@
   font-size: 20px;
   font-weight: 800;
   margin: 0 0 16px;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
 }
 
-// Duration card
 .durationCard {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 14px;
+  padding: 22px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 14px;
 }
 
 .durationCard__label {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--text-secondary);
   text-transform: uppercase;
+  letter-spacing: 1px;
   margin-bottom: 8px;
 }
 
 .durationCard__time {
   font-size: 48px;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   color: var(--text-primary);
   margin-bottom: 4px;
+  line-height: 1;
 }
 
 .durationCard__sub {
   font-size: 12px;
   color: var(--text-secondary);
+  font-weight: 400;
 }
 
-// Buttons
+/* Buttons */
 .actionArea {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .stopBtn {
   width: 100%;
-  height: 52px;
-  border-radius: 14px;
-  font-weight: 800;
-  color: #fff;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--app-warn);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: none;
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  background: rgba(192, 57, 43, 0.05);
   cursor: pointer;
-  background: linear-gradient(90deg, #f44336, #ff5252);
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(192, 57, 43, 0.1); }
 }
 
 .labeledBtn {
   width: 100%;
-  height: 52px;
-  border-radius: 14px;
-  font-weight: 800;
+  height: 48px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   background: var(--bg-card);
-  border: 2px solid;
+  border: 1px solid var(--border-color);
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  font-family: inherit;
+  transition: border-color 0.15s;
 }
 
 .relaxBtn {
-  border-color: rgba(76, 175, 80, 0.5);
-  color: #2e7d32;
+  color: #3a7d5a;
+  &:hover { border-color: #3a7d5a; }
 }
 
 .stressedBtn {
-  border-color: rgba(244, 67, 54, 0.5);
-  color: #c62828;
+  color: var(--app-warn);
+  &:hover { border-color: var(--app-warn); }
 }
 
 .infoBanner {
   background: var(--bg-card);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 11px;
+  padding: 12px 14px;
   font-size: 12px;
-  font-weight: 600;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1.5;
   color: var(--text-secondary);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
 
-  strong {
-    font-weight: 800;
-  }
+  strong { font-weight: 700; color: var(--text-primary); }
 }
 
-.labeledInfo strong { color: #7b2ff7; }
-.relaxedActive { border: 1px solid rgba(76, 175, 80, 0.3); strong { color: #2e7d32; } }
-.stressedActive { border: 1px solid rgba(244, 67, 54, 0.3); strong { color: #c62828; } }
+.labeledInfo strong { color: #7a6abf; }
+.relaxedActive { border-color: rgba(58, 125, 90, 0.3); strong { color: #3a7d5a; } }
+.stressedActive { border-color: rgba(192, 57, 43, 0.3); strong { color: var(--app-warn); } }
 
 .statusMessage {
-  margin-top: 12px;
+  margin-top: 10px;
   text-align: center;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-secondary);
 }

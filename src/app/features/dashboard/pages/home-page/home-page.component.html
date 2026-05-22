@@ -1,19 +1,22 @@
 <div class="home">
-    <!-- Greeting row -->
+
+  <!-- Greeting -->
   <div class="home__top">
     <div class="home__greet">
       <div class="home__greetSmall">{{ getTimeOfDay() }},</div>
-      <div class="home__greetName">{{ user()?.username || 'User' }}</div>
+      <div class="home__greetName">{{ user()?.name || user()?.username || 'User' }}</div>
     </div>
-    <div class="home__avatar" aria-label="User avatar">
-      {{ (user()?.username || 'U').slice(0,2).toUpperCase() }}
+    <div class="home__avatar" (click)="redirectToProfile()">
+      <img *ngIf="user()?.avatarUrl" [src]="user()?.avatarUrl" alt="Avatar" class="home__avatarImg" />
+      <span *ngIf="!user()?.avatarUrl">{{ getInitials() }}</span>
     </div>
   </div>
-  <!-- Status bar --> 
+
+  <!-- Status bar -->
   <div class="statusBar">
     <div class="statusBar__col">
       <span class="statusBar__label">Current Status</span>
-      <span class="statusBar__value statusBar__value--trend">{{ currentStatus() }}</span>
+      <span class="statusBar__value">{{ currentStatus() }}</span>
     </div>
     <div class="statusBar__col">
       <span class="statusBar__label">Since</span>
@@ -22,79 +25,279 @@
   </div>
 
   <!-- Gauge -->
-<div class="gaugeSection">
-  <div class="gaugeContainer">
-    <!-- SVG pentru inel -->
-    <svg viewBox="0 0 120 120" class="gaugeSvg">
-      <defs>
-        <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#00f5d4" />
-          <stop offset="100%" stop-color="#7b2ff7" />
-        </linearGradient>
-      </defs>
-      <!-- Cercul de fundal -->
-      <circle class="gaugeBg" cx="60" cy="60" r="52" />
-      <!-- Cercul de progres -->
-      <circle
-        class="gaugeFill"
-        cx="60" cy="60" r="52"
-        [attr.stroke-dasharray]="circumference"
-        [attr.stroke-dashoffset]="dashOffset"
-      />
-    </svg>
-    <!-- Textul central -->
-    <div class="gaugeInner">
-      <div class="gaugeValue">{{ gaugePercentage() }}%</div>
-      <div class="gaugeLabel">STRESS LEVEL</div>
-      <div class="gaugeStatus">{{ getStatusLabel() }}</div>
-      <div class="mlPrediction" *ngIf="mlStressLevel() !== '—'">
-        ML: {{ mlStressLevel() }}
+  <div class="gaugeSection">
+    <div class="gaugeContainer">
+      <svg viewBox="0 0 120 120" class="gaugeSvg">
+        <circle class="gaugeBg" cx="60" cy="60" r="52" />
+        <circle class="gaugeFill" cx="60" cy="60" r="52"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="dashOffset"
+          [attr.stroke]="gaugeColor()" />
+      </svg>
+      <div class="gaugeInner">
+        <div class="gaugeValue">{{ gaugePercentage() }}%</div>
+        <div class="gaugeLabel">STRESS LEVEL</div>
+        <div class="mlPrediction" *ngIf="mlStressLevel() !== '—'">
+          {{ mlStressLevel() }}
+        </div>
       </div>
     </div>
   </div>
+
+ <div class="deviceStatus" [class.deviceStatus--connected]="wsStatus() === 'connected'"
+                          [class.deviceStatus--connecting]="wsStatus() === 'connecting'"
+                          [class.deviceStatus--disconnected]="wsStatus() === 'disconnected' || wsStatus() === 'error'">
+  <span class="deviceStatusDot"></span>
+  <ng-container [ngSwitch]="wsStatus()">
+    <span *ngSwitchCase="'connected'">
+      <ng-container *ngIf="finger(); else noFinger">Device connected — finger detected</ng-container>
+      <ng-template #noFinger>Device connected — place finger on sensor</ng-template>
+    </span>
+    <span *ngSwitchCase="'connecting'">Connecting to device...</span>
+    <span *ngSwitchCase="'error'">Device unreachable — retrying...</span>
+    <span *ngSwitchDefault>Device disconnected — retrying...</span>
+  </ng-container>
 </div>
 
-  <div class="noFinger" *ngIf="!finger()">
-    <mat-icon>touch_app</mat-icon> Place finger on sensor
-  </div>
   <!-- Insight -->
   <div class="insightCard">
-    <div class="insightCard__icon"><mat-icon class="cyan-icon">tips_and_updates</mat-icon></div>
+    <div class="insightCard__icon"><mat-icon>tips_and_updates</mat-icon></div>
     <div class="insightCard__title">Today's Insight</div>
     <p class="insightCard__text">{{ getStressMessage() }}</p>
   </div>
 
   <!-- Sensor cards -->
   <div class="sensorRow">
-    <div class="sensorCard">
+
+    <!-- ── BPM expandat ── -->
+    <div class="sensorCard sensorCard--bpm sensorCard--expanded" *ngIf="expandedCard() === 'bpm'">
       <div class="sensorCard__header">
         <div class="sensorCard__title">
-          <mat-icon class="cyan-icon">favorite</mat-icon>
+          <mat-icon class="icon--bpm">favorite</mat-icon>
           <span>Heart Rate</span>
         </div>
-        <div class="liveIndicator">
-          <span class="liveDot"></span>LIVE
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('bpm')">
+            <mat-icon>expand_less</mat-icon>
+          </button>
         </div>
       </div>
       <div class="sensorCard__value">{{ finger() && bpm() ? bpm() : '--' }}</div>
       <div class="sensorCard__unit">BPM</div>
-      <div class="sensorCard__wave sensorCard__wave--cyan"></div>
+      <div class="sensorCard__waveWrap">
+        <canvas #bpmExpandedCanvas class="sensorCard__waveCanvas" width="400" height="40"></canvas>
+      </div>
+      <div class="sensorCard__history">
+        <div class="historyHeader">
+          <span class="historyTitle">Last 10 readings</span>
+          <span class="historySource">{{ historyLoading() ? 'loading...' : 'live + db' }}</span>
+        </div>
+        <ng-container *ngTemplateOutlet="historyTable; context: { field: 'bpm', unit: 'BPM' }"></ng-container>
+      </div>
     </div>
 
-    <div class="sensorCard">
+    <!-- ── GSR expandat ── -->
+    <div class="sensorCard sensorCard--gsr sensorCard--expanded" *ngIf="expandedCard() === 'gsr'">
       <div class="sensorCard__header">
         <div class="sensorCard__title">
-          <mat-icon class="purple-icon">show_chart</mat-icon>
+          <mat-icon class="icon--gsr">show_chart</mat-icon>
           <span>Galvanic Skin</span>
         </div>
-        <div class="liveIndicator">
-          <span class="liveDot"></span>LIVE
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('gsr')">
+            <mat-icon>expand_less</mat-icon>
+          </button>
         </div>
       </div>
       <div class="sensorCard__value">{{ finger() && gsr() ? gsr() : '--' }}</div>
       <div class="sensorCard__unit">μS</div>
-      <div class="sensorCard__wave sensorCard__wave--purple"></div>
+      <div class="sensorCard__waveWrap">
+        <canvas #gsrExpandedCanvas class="sensorCard__waveCanvas" width="400" height="40"></canvas>
+      </div>
+      <div class="sensorCard__history">
+        <div class="historyHeader">
+          <span class="historyTitle">Last 10 readings</span>
+          <span class="historySource">{{ historyLoading() ? 'loading...' : 'live + db' }}</span>
+        </div>
+        <ng-container *ngTemplateOutlet="historyTable; context: { field: 'gsr', unit: 'μS' }"></ng-container>
+      </div>
     </div>
-  </div>
 
+    <!-- ── IBI expandat ── -->
+    <div class="sensorCard sensorCard--ibi sensorCard--expanded" *ngIf="expandedCard() === 'ibi'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--ibi">timeline</mat-icon>
+          <span>IBI</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('ibi')">
+            <mat-icon>expand_less</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && ibi() ? ibi() : '--' }}</div>
+      <div class="sensorCard__unit">ms</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #ibiExpandedCanvas class="sensorCard__waveCanvas" width="400" height="40"></canvas>
+      </div>
+      <div class="sensorCard__history">
+        <div class="historyHeader">
+          <span class="historyTitle">Last 10 readings</span>
+          <span class="historySource">{{ historyLoading() ? 'loading...' : 'live + db' }}</span>
+        </div>
+        <ng-container *ngTemplateOutlet="historyTable; context: { field: 'ibi', unit: 'ms' }"></ng-container>
+      </div>
+    </div>
+
+    <!-- ── TEMP expandat ── -->
+    <div class="sensorCard sensorCard--temp sensorCard--expanded" *ngIf="expandedCard() === 'temp'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--temp">thermostat</mat-icon>
+          <span>Temperature</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('temp')">
+            <mat-icon>expand_less</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && temp() ? temp() : '--' }}</div>
+      <div class="sensorCard__unit">°C</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #tempExpandedCanvas class="sensorCard__waveCanvas" width="400" height="40"></canvas>
+      </div>
+      <div class="sensorCard__history">
+        <div class="historyHeader">
+          <span class="historyTitle">Last 10 readings</span>
+          <span class="historySource">{{ historyLoading() ? 'loading...' : 'live + db' }}</span>
+        </div>
+        <ng-container *ngTemplateOutlet="historyTable; context: { field: 'temp', unit: '°C' }"></ng-container>
+      </div>
+    </div>
+
+    <!-- ── BPM colapsat ── -->
+    <div class="sensorCard sensorCard--bpm" *ngIf="expandedCard() !== 'bpm'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--bpm">favorite</mat-icon>
+          <span>Heart Rate</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('bpm')">
+            <mat-icon>expand_more</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && bpm() ? bpm() : '--' }}</div>
+      <div class="sensorCard__unit">BPM</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #bpmCanvas class="sensorCard__waveCanvas" width="200" height="40"></canvas>
+      </div>
+    </div>
+
+    <!-- ── GSR colapsat ── -->
+    <div class="sensorCard sensorCard--gsr" *ngIf="expandedCard() !== 'gsr'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--gsr">show_chart</mat-icon>
+          <span>Galvanic Skin</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('gsr')">
+            <mat-icon>expand_more</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && gsr() ? gsr() : '--' }}</div>
+      <div class="sensorCard__unit">μS</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #gsrCanvas class="sensorCard__waveCanvas" width="200" height="40"></canvas>
+      </div>
+    </div>
+
+    <!-- ── IBI colapsat ── -->
+    <div class="sensorCard sensorCard--ibi" *ngIf="expandedCard() !== 'ibi'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--ibi">timeline</mat-icon>
+          <span>IBI</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('ibi')">
+            <mat-icon>expand_more</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && ibi() ? ibi() : '--' }}</div>
+      <div class="sensorCard__unit">ms</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #ibiCanvas class="sensorCard__waveCanvas" width="200" height="40"></canvas>
+      </div>
+    </div>
+
+    <!-- ── TEMP colapsat ── -->
+    <div class="sensorCard sensorCard--temp" *ngIf="expandedCard() !== 'temp'">
+      <div class="sensorCard__header">
+        <div class="sensorCard__title">
+          <mat-icon class="icon--temp">thermostat</mat-icon>
+          <span>Temperature</span>
+        </div>
+        <div class="sensorCard__headerRight">
+          <div class="liveIndicator"><span class="liveDot"></span>LIVE</div>
+          <button class="expandBtn" (click)="toggleExpand('temp')">
+            <mat-icon>expand_more</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="sensorCard__value">{{ finger() && temp() ? temp() : '--' }}</div>
+      <div class="sensorCard__unit">°C</div>
+      <div class="sensorCard__waveWrap">
+        <canvas #tempCanvas class="sensorCard__waveCanvas" width="200" height="40"></canvas>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<ng-template #historyTable let-field="field" let-unit="unit">
+  <div class="historyTable">
+    <div class="historyTableHead">
+      <span>#</span>
+      <span>Value</span>
+      <span>Stress</span>
+      <span>Date &amp; Time</span>
+    </div>
+    <ng-container *ngIf="dbHistory().length > 0; else emptyHistory">
+      <div class="historyTableRow"
+           *ngFor="let entry of dbHistory(); let i = index"
+           [class.historyTableRow--latest]="i === 0">
+        <span class="historyIdx">{{ i + 1 }}</span>
+        <span class="historyVal">
+          {{ field === 'bpm' ? entry.bpm :
+             field === 'gsr' ? entry.gsr :
+             field === 'ibi' ? entry.ibi : entry.temp }}
+          <em>{{ unit }}</em>
+        </span>
+        <span class="historyStress"
+              [class.historyStress--low]="entry.stressScore < 35"
+              [class.historyStress--mid]="entry.stressScore >= 35 && entry.stressScore <= 65"
+              [class.historyStress--high]="entry.stressScore > 65">
+          {{ entry.stressScore }}%
+        </span>
+        <span class="historyTime">{{ formatTimestamp(entry.timestamp) }}</span>
+      </div>
+    </ng-container>
+    <ng-template #emptyHistory>
+      <div class="historyEmpty">No readings yet</div>
+    </ng-template>
+  </div>
+</ng-template>

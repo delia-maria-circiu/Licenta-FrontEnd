@@ -1,7 +1,7 @@
 <div class="profile">
   <div class="profileCard">
 
-    <!-- Header cu avatar și nume -->
+    <!-- Avatar -->
     <div class="profileHeader">
       <div class="avatarWrapper" (click)="fileInput.click()">
         <div class="avatarCircle" *ngIf="!profile()?.avatarUrl; else avatarImg">
@@ -15,10 +15,11 @@
         </div>
       </div>
       <div class="profileName">{{ profile()?.name || profile()?.username }}</div>
-      <input #fileInput type="file" accept="image/*" style="display:none" (change)="onFileSelected($event)" />
+      <input #fileInput type="file" accept="image/*" style="display:none"
+             (change)="onFileSelected($event)" />
     </div>
 
-    <!-- Secțiunea Appearance -->
+    <!-- Appearance -->
     <div class="section">
       <div class="sectionHeader">
         <mat-icon class="sectionIcon">palette</mat-icon>
@@ -32,7 +33,7 @@
       </div>
     </div>
 
-    <!-- Secțiunea Personal Information (protejată) -->
+    <!-- Personal Information -->
     <div class="section" *ngIf="editProfile">
       <div class="sectionHeader">
         <mat-icon class="sectionIcon">person</mat-icon>
@@ -72,13 +73,14 @@
         </div>
       </div>
 
-      <button class="saveBtn" (click)="saveChanges()" [disabled]="!hasChanges() || isSaving()">
+      <button class="saveBtn" (click)="saveChanges()"
+              [disabled]="!hasChanges() || isSaving()">
         <mat-icon>save</mat-icon>
         {{ isSaving() ? 'Saving...' : 'Save Changes' }}
       </button>
     </div>
 
-    <!-- Secțiunea Connected Devices -->
+    <!-- Connected Devices
     <div class="section">
       <div class="sectionHeader">
         <mat-icon class="sectionIcon">devices</mat-icon>
@@ -89,17 +91,25 @@
           <mat-icon class="deviceIcon">watch</mat-icon>
           <div>
             <div class="deviceName">Stress Monitoring Device</div>
-            <div class="deviceStatus" [class.connected]="deviceConnected()" [class.disconnected]="!deviceConnected()">
+            <div class="deviceStatus"
+                 [class.connected]="wsStatus() === 'connected'"
+                 [class.connecting]="wsStatus() === 'connecting'"
+                 [class.disconnected]="wsStatus() === 'disconnected' || wsStatus() === 'error'">
               <span class="statusDot"></span>
-              {{ deviceConnected() ? 'Connected' : 'Disconnected' }}
+              <span [ngSwitch]="wsStatus()">
+                <ng-container *ngSwitchCase="'connected'">Connected</ng-container>
+                <ng-container *ngSwitchCase="'connecting'">Connecting...</ng-container>
+                <ng-container *ngSwitchCase="'error'">Unreachable</ng-container>
+                <ng-container *ngSwitchDefault>Disconnected</ng-container>
+              </span>
             </div>
           </div>
         </div>
         <mat-icon class="deviceArrow">chevron_right</mat-icon>
       </div>
-    </div>
+    </div> -->
 
-    <!-- Buton Logout -->
+    <!-- Logout -->
     <button class="logoutBtn" (click)="logout()">
       <mat-icon>logout</mat-icon> Logout
     </button>

@@ -1,12 +1,13 @@
 :host {
   display: block;
-  padding: 24px 20px 100px;
+  padding: 24px 20px 60px;
   background: var(--bg-primary);
   font-family: 'Inter', sans-serif;
   color: var(--text-primary);
 }
 
-/* ---- Salut + avatar ---- */
+// ── Top ───────────────────────────────────────────────────────────────────────
+
 .home__top {
   display: flex;
   justify-content: space-between;
@@ -15,73 +16,84 @@
 }
 
 .home__greetSmall {
-  font-size: 14px;
-  opacity: 0.7;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .home__greetName {
   font-size: 20px;
   font-weight: 800;
   margin-top: 2px;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
 }
 
 .home__avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00bcd4, #7b2ff7);
+  background: var(--accent);
   color: #fff;
-  font-weight: 800;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 14px;
   display: grid;
   place-items: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
-/* ---- Status card ---- */
+.home__avatarImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+// ── Status bar ────────────────────────────────────────────────────────────────
+
 .statusBar {
   display: flex;
   justify-content: space-between;
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
 }
 
 .statusBar__col {
   display: flex;
   flex-direction: column;
+  gap: 3px;
 }
 
 .statusBar__label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-  margin-bottom: 4px;
+  letter-spacing: 0.5px;
 }
 
 .statusBar__value {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
 }
 
-.statusBar__value--trend {
-  color: #2e7d32; /* verdele rămâne pentru mesajul de scădere */
-}
+// ── Gauge ─────────────────────────────────────────────────────────────────────
 
-/* ---- Gauge ---- */
 .gaugeSection {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .gaugeContainer {
-  width: 210px;
-  height: 210px;
+  width: 200px;
+  height: 200px;
   position: relative;
   display: flex;
   align-items: center;
@@ -96,16 +108,16 @@
 
 .gaugeBg {
   fill: none;
-  stroke: var(--border-color);  /* fundal inel, adaptiv */
-  stroke-width: 10;
+  stroke: var(--border-color);
+  stroke-width: 8;
 }
 
 .gaugeFill {
   fill: none;
-  stroke: url(#gaugeGradient);
-  stroke-width: 10;
+  stroke: var(--accent);
+  stroke-width: 8;
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.35s ease;
+  transition: stroke-dashoffset 0.4s ease, stroke 0.4s ease;
 }
 
 .gaugeInner {
@@ -119,73 +131,121 @@
 }
 
 .gaugeValue {
-  font-size: 48px;
+  font-size: 44px;
   font-weight: 800;
-  background: linear-gradient(135deg, #00bcd4, #7b2ff7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  line-height: 1;
 }
 
 .gaugeLabel {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--text-secondary);
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   margin-top: 4px;
 }
 
-.gaugeStatus {
-  margin-top: 12px;
-  background: rgba(0, 188, 212, 0.12);
-  color: #00bcd4;
-  padding: 4px 16px;
-  border-radius: 20px;
+.mlPrediction {
+  margin-top: 6px;
+  font-size: 11px;
   font-weight: 600;
-  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 2px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-border);
   display: inline-block;
 }
 
-/* ---- Insight card ---- */
+// ── No finger ─────────────────────────────────────────────────────────────────
+
+.noFinger {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+// ── Insight ───────────────────────────────────────────────────────────────────
+
 .insightCard {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
 }
 
 .insightCard__icon {
   margin-bottom: 8px;
-  color: #00bcd4;
+  color: var(--accent);
 }
 
 .insightCard__title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--text-primary);
 }
 
 .insightCard__text {
   font-size: 13px;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
+  font-weight: 400;
 }
 
-/* ---- Sensor cards ---- */
+// ── Sensor grid ───────────────────────────────────────────────────────────────
+
 .sensorRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
 }
 
+// Card de bază
 .sensorCard {
   background: var(--bg-card);
   border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  border: 1px solid var(--border-color);
+  min-width: 0;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+}
+
+// Card expandat — full width, deasupra celorlalte
+.sensorCard--expanded {
+  grid-column: 1 / -1;
+  order: -1;
+}
+
+// Fiecare tip de card are un accent de culoare diferit pe border-top
+.sensorCard--bpm {
+  border-top: 2px solid #e05c5c;
+}
+.sensorCard--gsr {
+  border-top: 2px solid #5c8ae0;
+}
+.sensorCard--ibi {
+  border-top: 2px solid #27a060;
+}
+.sensorCard--temp {
+  border-top: 2px solid #d4853a;
 }
 
 .sensorCard__header {
@@ -195,86 +255,273 @@
   margin-bottom: 8px;
 }
 
+.sensorCard__headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .sensorCard__title {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Icoane colorate per tip senzor
+.icon--bpm  { color: #e05c5c; }
+.icon--gsr  { color: #5c8ae0; }
+.icon--ibi  { color: #27a060; }
+.icon--temp { color: #d4853a; }
+
+.expandBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+  transition: color 0.2s;
+
+  &:hover { color: var(--text-primary); }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .liveIndicator {
   font-size: 10px;
-  font-weight: 800;
-  color: #e53935;
+  font-weight: 700;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .liveDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #e53935;
-  animation: pulse 1.5s infinite;
+  background: var(--success);
+  animation: pulse 1.8s infinite;
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
 }
 
 .sensorCard__value {
-  font-size: 34px;
+  font-size: 32px;
   font-weight: 800;
-  margin-top: 8px;
   color: var(--text-primary);
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-top: 4px;
 }
 
 .sensorCard__unit {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+// Canvas-ul graficului — card cu fundal ușor diferit față de cardul parinte
+.sensorCard__waveWrap {
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 8px 4px;
+}
+
+.sensorCard__waveCanvas {
+  width: 100%;
+  height: 40px;
+  display: block;
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+
+.sensorCard__history {
+  margin-top: 14px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.historyTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.historySource {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.historyTable {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.historyTableHead {
+  display: grid;
+  grid-template-columns: 24px 1fr 1fr 1fr;
+  gap: 6px;
+  padding: 2px 6px 6px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.historyTableRow {
+  display: grid;
+  grid-template-columns: 24px 1fr 1fr 1fr;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  align-items: center;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--accent-soft);
+  }
+
+  &--latest {
+    background: var(--accent-soft);
+    border-left: 2px solid var(--accent);
+    padding-left: 4px;
+  }
+}
+
+.historyIdx {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.historyVal {
+  font-weight: 600;
+  color: var(--text-primary);
+
+  em {
+    font-style: normal;
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-left: 2px;
+  }
+}
+
+.historyStress {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+
+  &--low  { color: var(--success); }
+  &--mid  { color: var(--amber); }
+  &--high { color: var(--danger); }
+}
+
+.historyTime {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.historyEmpty {
+  text-align: center;
+  padding: 16px;
   font-size: 12px;
   color: var(--text-secondary);
-  margin-bottom: 12px;
 }
 
-.sensorCard__wave {
-  height: 20px;
-  border-radius: 6px;
-  opacity: 0.25;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-.sensorCard__wave--cyan {
-  background: linear-gradient(90deg, rgba(0,188,212,0.3), rgba(0,188,212,0.8), rgba(0,188,212,0.3));
-}
-
-.sensorCard__wave--purple {
-  background: linear-gradient(90deg, rgba(123,47,247,0.3), rgba(123,47,247,0.8), rgba(123,47,247,0.3));
-}
-
-.noFinger {
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 14px;
+.deviceStatus {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  margin-bottom: 20px;
-}
-.mlPrediction {
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #7b2ff7;
-  background: rgba(123, 47, 247, 0.1);
-  padding: 2px 12px;
   border-radius: 12px;
-  display: inline-block;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  transition: background 0.3s, border-color 0.3s;
+
+  &--connected {
+    background: rgba(39, 160, 96, 0.07);
+    border-color: rgba(39, 160, 96, 0.25);
+    color: var(--text-primary);
+
+    .deviceStatusDot {
+      background: #27a060;
+      box-shadow: 0 0 0 3px rgba(39, 160, 96, 0.15);
+      animation: pulse 2s infinite;
+    }
+  }
+
+  &--connecting {
+    background: var(--amber-soft);
+    border-color: rgba(217, 119, 6, 0.25);
+    color: var(--text-primary);
+
+    .deviceStatusDot {
+      background: var(--amber);
+      animation: blink 1s infinite;
+    }
+  }
+
+  &--disconnected {
+    .deviceStatusDot {
+      background: var(--text-secondary);
+      animation: none;
+    }
+  }
+}
+
+.deviceStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
 }

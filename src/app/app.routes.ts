@@ -8,6 +8,7 @@ import { HomePageComponent } from './features/dashboard/pages/home-page/home-pag
 import { TrainingPageComponent } from './features/dashboard/pages/training-page/training-page.component';
 import { ProfilePageComponent } from './features/dashboard/pages/profile-page/profile-page.component';
 import { RelaxPageComponent } from './features/dashboard/pages/relax-page/relax-page.component';
+import { TrendsPageComponent } from './features/dashboard/pages/trends-page/trends-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -20,7 +21,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
-      // { path: 'trends', component: ComingSoonPageComponent, data: { title: 'Trends' } },
+      { path: 'trends', component: TrendsPageComponent },
       { path: 'training', component: TrainingPageComponent },
       { path: 'relax', component: RelaxPageComponent},
       { path: 'profile', component: ProfilePageComponent },

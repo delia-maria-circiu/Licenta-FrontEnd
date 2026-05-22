@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
+import { UserService } from '../../../../core/services/user.service';
 import { LoginModel } from '../../models/login.model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
@@ -38,6 +39,7 @@ export class LoginPageComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private snack: MatSnackBar
@@ -68,10 +70,23 @@ export class LoginPageComponent implements OnInit {
 
     this.authService.login(loginData).subscribe({
       next: (response) => {
-        this.isLoading = false;
-        if (response.id) {
-          this.router.navigate(['/dashboard/home']);
+        if (!response.id) {
+          this.isLoading = false;
+          return;
         }
+        // După login, încarcă profilul complet din backend
+        this.userService.getProfile(response.id).subscribe({
+          next: (profile) => {
+            this.authService.updateCurrentUser(profile);
+            this.isLoading = false;
+            this.router.navigate(['/dashboard/home']);
+          },
+          error: () => {
+            // Profilul nu s-a încărcat, dar loginul a reușit — mergi mai departe
+            this.isLoading = false;
+            this.router.navigate(['/dashboard/home']);
+          }
+        });
       },
       error: (err: Error) => {
         this.isLoading = false;

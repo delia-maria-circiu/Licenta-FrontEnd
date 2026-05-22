@@ -1,44 +1,27 @@
 @use '@angular/material' as mat;
 
-// Palete personalizate
 $primary: mat.m2-define-palette((
-  50: #E3F2FD,
-  100: #BBDEFB,
-  200: #90CAF9,
-  300: #64B5F6,
-  400: #42A5F5,
-  500: #1976D2,
-  600: #1565C0,
-  700: #0D47A1,
-  800: #0B3D91,
-  900: #082F7A,
-  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #000, 500: #fff, 600: #fff, 700: #fff, 800: #fff, 900: #fff)
+  50: #f0f0f0, 100: #d9d9d9, 200: #bfbfbf, 300: #a0a0a0,
+  400: #808080, 500: #4a4a4a, 600: #3a3a3a, 700: #2a2a2a,
+  800: #1a1a1a, 900: #0d0d0d,
+  contrast: (50:#000,100:#000,200:#000,300:#000,400:#fff,500:#fff,600:#fff,700:#fff,800:#fff,900:#fff)
 ));
 
 $accent: mat.m2-define-palette((
-  50: #E0F7FA,
-  100: #B2EBF2,
-  200: #80DEEA,
-  300: #4DD0E1,
-  400: #26C6DA,
-  500: #00BCD4,
-  600: #00ACC1,
-  700: #0097A7,
-  800: #00838F,
-  900: #006064,
-  contrast: (50: #000, 100: #000, 200: #000, 300: #000, 400: #000, 500: #000, 600: #fff, 700: #fff, 800: #fff, 900: #fff)
+  50: #e8f5f4, 100: #c0e5e3, 200: #94d2cf, 300: #65bcb8,
+  400: #42ada9, 500: #3d9e96, 600: #358e87, 700: #2b7a73,
+  800: #226762, 900: #154540,
+  contrast: (50:#000,100:#000,200:#000,300:#000,400:#000,500:#fff,600:#fff,700:#fff,800:#fff,900:#fff)
 ));
 
 $warn: mat.m2-define-palette(mat.$m2-red-palette, 500);
 
-// Temă LIGHT
 $light-theme: mat.m2-define-light-theme((
   color: (primary: $primary, accent: $accent, warn: $warn),
   typography: mat.m2-define-typography-config(),
   density: 0,
 ));
 
-// Temă DARK – folosim aceleași palete, dar pe fundal dark
 $dark-theme: mat.m2-define-dark-theme((
   color: (primary: $primary, accent: $accent, warn: $warn),
   typography: mat.m2-define-typography-config(),
@@ -46,53 +29,92 @@ $dark-theme: mat.m2-define-dark-theme((
 ));
 
 @include mat.core();
+@include mat.all-component-themes($light-theme);
 
-// Aplicăm tema light implicit
-:root {
-  --bg-primary: #F6F8FB;
-  --bg-card: #ffffff;
-  --text-primary: #102A43;
-  --text-secondary: #6b7280;
-  --border-color: rgba(16, 42, 67, 0.08);
-  --input-bg: rgba(0, 0, 0, 0.03);
-  --accent-gradient: linear-gradient(90deg, #00bcd4, #7b2ff7);
-  --app-primary: #1976D2;
-  --app-accent: #00BCD4;
-  --app-warn: #F44336;
-  --app-bg: #F6F8FB;
-  --app-indigo: #6A5CFF;
-}
-
-// Când atributul data-theme="dark", comutăm la dark theme
 [data-theme="dark"] {
   @include mat.all-component-colors($dark-theme);
-  --app-primary: #00BCD4;      // accentul devine principal
-  --app-accent: #7b2ff7;
-  --app-bg: #0a0a0f;
-  --app-indigo: #7b2ff7;
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
 }
 
+/* ── Light variables ── */
+// :root {
+//   --bg-primary:     #f5f4f1;
+//   --bg-card:        #ffffff;
+//   --text-primary:   #1c1c1e;
+//   --text-secondary: #6b6b70;
+//   --border-color:   rgba(0, 0, 0, 0.07);
+//   --input-bg:       #efefec;
+//   --app-accent:     #3d9e96;
+//   --app-warn:       #c0392b;
+// }
+
+// /* ── Dark variables ── */
+// [data-theme="dark"] {
+//   --bg-primary:     #131312;
+//   --bg-card:        #1e1e1c;
+//   --text-primary:   #e8e8e5;
+//   --text-secondary: #88887f;
+//   --border-color:   rgba(255, 255, 255, 0.07);
+//   --input-bg:       #252523;
+//   --app-accent:     #4ab0a8;
+//   --app-warn:       #e55347;
+// }
+
+/* ── Light ── */
+:root {
+  --bg-primary:       #f7f7f5;
+  --bg-card:          #ffffff;
+  --text-primary:     #18181b;
+  --text-secondary:   #71717a;
+  --border-color:     rgba(0, 0, 0, 0.08);
+  --input-bg:         #f2f2ef;
+
+  --accent:           #0d9488;   /* teal-600 */
+  --accent-soft:      rgba(13, 148, 136, 0.10);
+  --accent-border:    rgba(13, 148, 136, 0.30);
+
+  --amber:            #d97706;   /* amber-600 */
+  --amber-soft:       rgba(217, 119, 6, 0.10);
+
+  --danger:           #dc2626;
+  --success:          #16a34a;
+
+  --app-accent:       #0d9488;
+  --app-warn:         #dc2626;
+}
+
+/* ── Dark ── */
+[data-theme="dark"] {
+  --bg-primary:       #0f0f0f;
+  --bg-card:          #1a1a1a;
+  --text-primary:     #fafaf9;
+  --text-secondary:   #a1a1aa;
+  --border-color:     rgba(255, 255, 255, 0.08);
+  --input-bg:         #242424;
+
+  --accent:           #14b8a6;   /* teal-500 — un pic mai luminos pe dark */
+  --accent-soft:      rgba(20, 184, 166, 0.12);
+  --accent-border:    rgba(20, 184, 166, 0.28);
+
+  --amber:            #f59e0b;
+  --amber-soft:       rgba(245, 158, 11, 0.12);
+
+  --danger:           #ef4444;
+  --success:          #22c55e;
+
+  --app-accent:       #14b8a6;
+  --app-warn:         #ef4444;
+}
 html, body {
   height: 100%;
+  margin: 0;
 }
 
 body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(25, 118, 210, 0.16), transparent 60%),
-              radial-gradient(1200px 600px at 50% 100%, rgba(0, 188, 212, 0.14), transparent 62%),
-              var(--app-bg);
-  color: #102A43;
-  transition: background 0.3s, color 0.3s;
-}
-
-[data-theme="dark"] body {
-  background: radial-gradient(1200px 600px at 50% 0%, rgba(0, 188, 212, 0.12), transparent 60%),
-              radial-gradient(1200px 600px at 50% 100%, rgba(123, 47, 247, 0.1), transparent 62%),
-              var(--app-bg);
-  color: #e0e0e0;
+  font-family: 'Inter', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
 .app-page {
@@ -100,35 +122,25 @@ body {
   display: grid;
   place-items: center;
   padding: 24px 16px;
+  background: var(--bg-primary);
 }
 
 .glass-card {
   width: min(460px, 100%);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(16, 42, 67, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="dark"] {
-  --bg-primary: #0a0a0f;
-  --bg-card: #1a1a2e;
-  --text-primary: #e0e0e0;
-  --text-secondary: #9ca3af;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --accent-gradient: linear-gradient(90deg, #00f5d4, #7b2ff7);}
-  
 .success-snackbar {
-  background: #4caf50 !important;
+  background: #2d6a4f !important;
   color: #fff !important;
   font-weight: 600;
-  .mat-simple-snackbar-action { color: #fff; }
 }
 
 .error-snackbar {
-  background: #dc3545 !important;
-  color: #fff !important;
+  background: #2d2d2b !important;
+  color: #e8e8e5 !important;
   font-weight: 600;
-  .mat-simple-snackbar-action { color: #fff; }
 }

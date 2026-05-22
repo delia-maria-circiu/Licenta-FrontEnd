@@ -1,0 +1,153 @@
+// trends-page.component.scss
+// Stil consistent cu relax-page și celelalte pagini din aplicație
+
+:host {
+  display: block;
+  padding: 24px 20px 60px;
+  background: var(--bg-primary);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+// .trends-page {
+//   max-width: 1200px;
+//   margin: 0 auto;
+// }
+
+/* Header */
+.trends-header {
+  margin-bottom: 24px;
+}
+
+.trends-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+/* Card grafic */
+.chart-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-color);
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 0.96;
+  }
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .chart-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .stress-dot { background: var(--app-accent); }
+      .event-dot { background: #f44336; }
+    }
+  }
+}
+
+.chart-container {
+  height: 280px;
+  position: relative;
+  canvas {
+    max-height: 100%;
+    width: 100%;
+  }
+}
+
+/* Grid 4 carduri statistice */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 14px;
+  padding: 18px 16px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .stat-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+
+    &.positive {
+      color: #4caf50;  // verde pentru îmbunătățiri
+    }
+    &.negative {
+      color: #f44336;  // roșu pentru evoluții negative
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 540px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-container {
+    height: 220px;
+  }
+  .trends-title {
+    font-size: 20px;
+  }
+}
