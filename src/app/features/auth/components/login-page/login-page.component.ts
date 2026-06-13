@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
-import { UserService } from '../../../../core/services/user.service';
 import { LoginModel } from '../../models/login.model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,14 +31,13 @@ import { Subject } from 'rxjs';
 })
 export class LoginPageComponent implements OnInit {
   loginForm: FormGroup;
-  isLoading: boolean = false;
+  isLoading = signal(false);       // ← signal în loc de boolean
   hidePassword = signal(true);
   private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private snack: MatSnackBar
@@ -65,31 +63,26 @@ export class LoginPageComponent implements OnInit {
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     const loginData: LoginModel = this.loginForm.value;
 
     this.authService.login(loginData).subscribe({
-      next: (response) => {
-        if (!response.id) {
-          this.isLoading = false;
-          return;
+      next: (response: any) => {
+        this.isLoading.set(false);
+        if (response?.mfaRequired) {
+          this.router.navigate(['/verify-otp'], {
+            state: {
+              email: response.email,
+              maskedEmail: response.maskedEmail,
+              userId: response.userId
+            }
+          });
+        } else {
+          this.router.navigate(['/dashboard/home']);
         }
-        // După login, încarcă profilul complet din backend
-        this.userService.getProfile(response.id).subscribe({
-          next: (profile) => {
-            this.authService.updateCurrentUser(profile);
-            this.isLoading = false;
-            this.router.navigate(['/dashboard/home']);
-          },
-          error: () => {
-            // Profilul nu s-a încărcat, dar loginul a reușit — mergi mai departe
-            this.isLoading = false;
-            this.router.navigate(['/dashboard/home']);
-          }
-        });
       },
       error: (err: Error) => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.snack.open(err.message, 'Close', {
           duration: 4000,
           panelClass: ['error-snackbar']

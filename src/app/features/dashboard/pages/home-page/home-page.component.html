@@ -34,15 +34,21 @@
           [attr.stroke-dashoffset]="dashOffset"
           [attr.stroke]="gaugeColor()" />
       </svg>
-      <div class="gaugeInner">
-        <div class="gaugeValue">{{ gaugePercentage() }}%</div>
-        <div class="gaugeLabel">STRESS LEVEL</div>
-        <div class="mlPrediction" *ngIf="mlStressLevel() !== '—'">
-          {{ mlStressLevel() }}
-        </div>
+    <div class="gaugeInner">
+  <div class="gaugeValue">{{ gaugePercentage() }}%</div>
+  <div class="gaugeLabel">STRESS LEVEL</div>
+
+  <div class="modelScores" *ngIf="mlStressLevel() !== '—'">
+    <span class="modelScore modelScore--rf">
+      RF: {{ gaugePercentage() }}%
+    </span>
+    <span class="modelScore modelScore--svm" *ngIf="svmScore() !== null">
+      SVM: {{ svmScore() }}%
+    </span>
+  </div>
+</div>
       </div>
     </div>
-  </div>
 
  <div class="deviceStatus" [class.deviceStatus--connected]="wsStatus() === 'connected'"
                           [class.deviceStatus--connecting]="wsStatus() === 'connecting'"

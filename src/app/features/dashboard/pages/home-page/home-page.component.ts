@@ -12,7 +12,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from '../../../../core/services/user.service';
 import { Router } from '@angular/router';
 
-type StressLevel = 'Relaxat' | 'Moderat' | 'Stresat';
+type StressLevel = 'Relaxed' | 'Moderate' | 'Stressed';
 
 @Component({
   selector: 'app-home-page',
@@ -29,11 +29,12 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
   temp            = signal<number | null>(null);
   finger          = signal(false);
   stressScore     = signal(0);
-  stressLevel     = signal<StressLevel>('Relaxat');
+  stressLevel     = signal<StressLevel>('Relaxed');
   gaugePercentage = signal(0);
   private userId: number | null = null;
 
-  mlStressLevel = signal<'Relaxat' | 'Stresat' | '—'>('—');
+  svmScore      = signal<number | null>(null);
+  mlStressLevel = signal<'Relaxed' | 'Stressed' | '—'>('—');
   currentStatus = signal('No data');
   since         = signal('');
 
@@ -44,8 +45,14 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
   private gsrWindow:  number[] = [];
   private lastScores: number[] = [];
 
-  private smoothedMlScore          = 50;
+  // Smoothing RF
+  private smoothedMlScore             = 50;
   private readonly ML_SMOOTHING_ALPHA = 0.4;
+
+  // Smoothing SVM — alpha mai mare = puțin mai reactiv decât RF
+  private smoothedSvmScore              = 50;
+  private readonly SVM_SMOOTHING_ALPHA  = 0.45;
+
   private passiveSessionId: number | null = null;
 
   private lastReadingTime: Date | null = null;
@@ -60,28 +67,25 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
   dbHistory      = signal<SensorHistoryEntry[]>([]);
   historyLoading = signal(false);
   expandedCard   = signal<'bpm' | 'gsr' | 'ibi' | 'temp' | null>(null);
-  wsStatus = signal<WsStatus>('disconnected');
+  wsStatus       = signal<WsStatus>('disconnected');
 
   private router = inject(Router);
 
-  // Canvas colapsate
   @ViewChild('bpmCanvas')  bpmCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('gsrCanvas')  gsrCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('ibiCanvas')  ibiCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('tempCanvas') tempCanvas!: ElementRef<HTMLCanvasElement>;
 
-  // Canvas expandate
   @ViewChild('bpmExpandedCanvas')  bpmExpandedCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('gsrExpandedCanvas')  gsrExpandedCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('ibiExpandedCanvas')  ibiExpandedCanvas!:  ElementRef<HTMLCanvasElement>;
   @ViewChild('tempExpandedCanvas') tempExpandedCanvas!: ElementRef<HTMLCanvasElement>;
 
-  // Culori per senzor — în ton cu tema, fără toate identice
   private readonly COLORS = {
-    bpm:  '#e05c5c', // roșu cald
-    gsr:  '#5c8ae0', // albastru
-    ibi:  '#27a060', // verde — în ton cu accent-ul teal al temei
-    temp: '#d4853a'  // portocaliu
+    bpm:  '#e05c5c',
+    gsr:  '#5c8ae0',
+    ibi:  '#27a060',
+    temp: '#d4853a'
   };
 
   constructor(
@@ -106,9 +110,10 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.startSinceTimer();
     this.sub.add(
       this.ws.data$.subscribe(data => data && this.processData(data))
-    );this.sub.add(
-  this.ws.status$.subscribe(s => this.wsStatus.set(s))
-);
+    );
+    this.sub.add(
+      this.ws.status$.subscribe(s => this.wsStatus.set(s))
+    );
   }
 
   ngAfterViewInit(): void {
@@ -119,9 +124,9 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   gaugeColor(): string {
     const s = this.gaugePercentage();
-    if (s < 35)  return '#27a060'; // verde — relaxat
-    if (s <= 65) return '#d4853a'; // portocaliu — moderat
-    return '#e05c5c';              // roșu — stresat
+    if (s < 35)  return '#27a060';
+    if (s <= 65) return '#d4853a';
+    return '#e05c5c';
   }
 
   // ─── Since timer ─────────────────────────────────────────────────────────────
@@ -193,8 +198,8 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   formatTimestamp(ts: string): string {
     const d = new Date(ts);
-    const date = d.toLocaleDateString('ro-RO', { day: '2-digit', month: '2-digit' });
-    const time = d.toLocaleTimeString('ro-RO', {
+    const date = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
+    const time = d.toLocaleTimeString('en-US', {
       hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
     return `${date} ${time}`;
@@ -278,7 +283,6 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
     const range = maxY - minY;
     const stepX = w / (data.length - 1);
 
-    // Fill subtil
     const grad = ctx.createLinearGradient(0, 0, 0, h);
     grad.addColorStop(0, color + '30');
     grad.addColorStop(1, color + '00');
@@ -294,7 +298,6 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Linia
     ctx.beginPath();
     for (let i = 0; i < data.length; i++) {
       const x = i * stepX;
@@ -337,10 +340,10 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
             if (this.stressScore() === 0 && res.lastStressScore !== undefined) {
               this.stressScore.set(res.lastStressScore);
               this.gaugePercentage.set(res.lastStressScore);
-              const s     = res.lastStressScore;
-              const level: StressLevel = s < 35 ? 'Relaxat' : s <= 65 ? 'Moderat' : 'Stresat';
+              const s = res.lastStressScore;
+              const level: StressLevel = s < 35 ? 'Relaxed' : s <= 65 ? 'Moderate' : 'Stressed';
               this.stressLevel.set(level);
-              this.mlStressLevel.set(level === 'Relaxat' ? 'Relaxat' : 'Stresat');
+              this.mlStressLevel.set(level === 'Relaxed' ? 'Relaxed' : 'Stressed');
             }
           } else {
             this.currentStatus.set('No data yet');
@@ -389,24 +392,37 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sensorService.predictStress(this.userId, [filteredBpm, ibi, filteredGsr, temp])
       .subscribe({
         next: (response: any) => {
-          let rawScore = response.stress_score
+          // ── RF smoothing ────────────────────────────────────────────────────
+          let rawRf = response.stress_score
             ?? Math.round((response.stress_probability ?? 0) * 100);
-          rawScore = Number(rawScore);
-          if (isNaN(rawScore)) return;
+          rawRf = Number(rawRf);
+          if (isNaN(rawRf)) return;
 
-          this.smoothedMlScore = this.ML_SMOOTHING_ALPHA * rawScore
+          this.smoothedMlScore = this.ML_SMOOTHING_ALPHA * rawRf
             + (1 - this.ML_SMOOTHING_ALPHA) * this.smoothedMlScore;
           const finalScore = Math.round(this.smoothedMlScore);
 
           this.stressScore.set(finalScore);
           this.gaugePercentage.set(finalScore);
 
-          const level: StressLevel = finalScore < 35 ? 'Relaxat'
-            : finalScore <= 65 ? 'Moderat' : 'Stresat';
+          const level: StressLevel = finalScore < 35 ? 'Relaxed'
+            : finalScore <= 65 ? 'Moderate' : 'Stressed';
           this.stressLevel.set(level);
-          this.mlStressLevel.set(level === 'Relaxat' ? 'Relaxat' : 'Stresat');
+          this.mlStressLevel.set(level === 'Relaxed' ? 'Relaxed' : 'Stressed');
+
+          // ── SVM smoothing ───────────────────────────────────────────────────
+          if (response.svm_score !== null && response.svm_score !== undefined) {
+            const rawSvm = Number(response.svm_score);
+            if (!isNaN(rawSvm)) {
+              this.smoothedSvmScore = this.SVM_SMOOTHING_ALPHA * rawSvm
+                + (1 - this.SVM_SMOOTHING_ALPHA) * this.smoothedSvmScore;
+              this.svmScore.set(Math.round(this.smoothedSvmScore));
+            }
+          }
+
           this.updateStatus(finalScore);
 
+          // ── Salvare în BD ───────────────────────────────────────────────────
           this.sensorService.saveReading({
             bpm: filteredBpm,
             ibi,

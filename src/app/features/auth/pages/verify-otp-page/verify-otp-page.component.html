@@ -1,0 +1,74 @@
+<div class="otp">
+  <div class="otp__card">
+
+    <!-- Icon -->
+    <div class="otp__icon">
+      <mat-icon>mark_email_read</mat-icon>
+    </div>
+
+    <h1 class="otp__title">Check your email</h1>
+    <p class="otp__sub">
+      We sent a 6-digit code to<br>
+      <strong>{{ maskedEmail }}</strong>
+    </p>
+
+    <!-- Digit inputs -->
+    <div class="otp__inputs" (paste)="onPaste($event)">
+      <input
+        *ngFor="let d of digits; let i = index"
+        [id]="'digit-' + i"
+        class="otp__digit"
+        type="text"
+        inputmode="numeric"
+        maxlength="1"
+        [value]="digits[i]"
+        (input)="onDigitInput(i, $event)"
+        (keydown)="onKeyDown(i, $event)"
+        autocomplete="one-time-code"
+      />
+    </div>
+
+    <!-- Error -->
+    <div class="otp__error" *ngIf="errorMsg()">
+      <mat-icon>error_outline</mat-icon>
+      {{ errorMsg() }}
+      <span *ngIf="attemptsLeft() > 0 && attemptsLeft() < 5">
+        ({{ attemptsLeft() }} attempts left)
+      </span>
+    </div>
+
+    <!-- Countdown -->
+    <div class="otp__countdown" *ngIf="countdown() > 0">
+      Code expires in <strong>{{ formatCountdown() }}</strong>
+    </div>
+    <div class="otp__countdown otp__countdown--expired" *ngIf="countdown() === 0">
+      Code expired
+    </div>
+
+    <!-- Submit -->
+    <button
+      class="otp__btn"
+      (click)="submit()"
+      [disabled]="!isComplete || isLoading() || countdown() === 0">
+      <span *ngIf="!isLoading()">Verify Code</span>
+      <span *ngIf="isLoading()" class="otp__spinner"></span>
+    </button>
+
+    <!-- Resend -->
+    <div class="otp__resend">
+      Didn't receive it?
+      <button
+        class="otp__resendBtn"
+        (click)="resendCode()"
+        [disabled]="isResending() || countdown() > 240">
+        {{ isResending() ? 'Sending...' : 'Resend code' }}
+      </button>
+    </div>
+
+    <!-- Back -->
+    <button class="otp__back" (click)="backToLogin()">
+      <mat-icon>arrow_back</mat-icon> Back to login
+    </button>
+
+  </div>
+</div>

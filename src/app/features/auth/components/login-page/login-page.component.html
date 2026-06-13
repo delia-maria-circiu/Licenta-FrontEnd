@@ -1,7 +1,7 @@
 <div class="app-page">
   <div class="auth">
     <div class="authCard__brand">
-      <div class="authCard__logo">MonitorStress</div>
+      <div class="authCard__logo">StressVision</div>
       <div class="authCard__tag">Bio-Feedback &amp; ML Stress Monitor</div>
     </div>
 
@@ -23,9 +23,9 @@
         <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Minimum 4 characters</mat-error>
       </mat-form-field>
 
-      <button mat-flat-button color="primary" class="auth__submit" type="submit" [disabled]="loginForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Sign In</span>
-        <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="18"></mat-progress-spinner>
+      <button mat-flat-button color="primary" class="auth__submit" type="submit" [disabled]="loginForm.invalid || isLoading()">
+        <span *ngIf="!isLoading()">Sign In</span>
+        <mat-progress-spinner *ngIf="isLoading()" mode="indeterminate" diameter="18"></mat-progress-spinner>
       </button>
     </form>
 

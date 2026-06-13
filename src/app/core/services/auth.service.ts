@@ -25,20 +25,11 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(loginData: LoginModel): Observable<CurrentUser> {
-    return this.http.post<CurrentUser>(`${this.apiUrl}/auth/login`, loginData).pipe(
-      tap((response: any) => {
-        if (response?.id != null && response?.username) {
-          const user: CurrentUser = {
-            id: Number(response.id),
-            username: String(response.username)
-          };
-          localStorage.setItem('currentUser', JSON.stringify(user));
-        }
-      }),
-      catchError(this.handleError)
-    );
-  }
+login(loginData: LoginModel): Observable<any> {
+  return this.http.post<any>(`${this.apiUrl}/auth/login`, loginData).pipe(
+    catchError(this.handleError)
+  );
+}
 
   register(registerData: RegisterModel): Observable<CurrentUser> {
     return this.http.post<CurrentUser>(`${this.apiUrl}/auth/register`, registerData).pipe(

@@ -9,11 +9,15 @@ import { TrainingPageComponent } from './features/dashboard/pages/training-page/
 import { ProfilePageComponent } from './features/dashboard/pages/profile-page/profile-page.component';
 import { RelaxPageComponent } from './features/dashboard/pages/relax-page/relax-page.component';
 import { TrendsPageComponent } from './features/dashboard/pages/trends-page/trends-page.component';
+import { VerifyOtpPageComponent } from './features/auth/pages/verify-otp-page/verify-otp-page.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent, canActivate: [guestGuard] },
   { path: 'register', component: RegisterPageComponent, canActivate: [guestGuard] },
+  {
+  path: 'verify-otp',component: VerifyOtpPageComponent
+},
   {
     path: 'dashboard',
     component: DashboardComponent,

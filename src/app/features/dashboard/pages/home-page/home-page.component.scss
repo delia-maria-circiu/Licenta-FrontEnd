@@ -525,3 +525,29 @@
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.2; }
 }
+
+.modelScores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.modelScore {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+
+  &--rf {
+    color: var(--accent, #0d9488);
+    background: var(--accent-soft, rgba(13, 148, 136, 0.1));
+  }
+
+  &--svm {
+    color: var(--amber, #d97706);
+    background: var(--amber-soft, rgba(217, 119, 6, 0.1));
+  }
+}
